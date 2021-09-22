@@ -11,9 +11,10 @@ namespace My_Little_Store
 
         private Item[] _inventory;
 
+
         public int Gold { get { return _gold; } }
 
-        public Item[] Inventory { get { return _inventory; } set{ _inventory = value; } }
+        public Item[] Inventory { get { return _inventory; } set{ _inventory = value;} }
 
         public Player(int gold)
         {
@@ -23,7 +24,22 @@ namespace My_Little_Store
 
         public void Buy(Item item)
         {
-        
+            int newInventorySize = _inventory.Length + 1;
+            Item[] placeHolder = new Item[newInventorySize];
+
+            if (_gold <= item.Cost)
+            {
+                Console.WriteLine("You purchased the " + item.Name + "!");
+                _gold -= item.Cost;
+                for (int i = 0; i < _inventory.Length; i++) 
+                    placeHolder[i] = _inventory[i];
+                placeHolder[newInventorySize] = item;
+                _inventory = placeHolder;
+
+            }
+            else if (_gold > item.Cost)
+                Console.WriteLine("You Don't Have Enough For That.");
+
         }
 
         public string[] GetItemNames()

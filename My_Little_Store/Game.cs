@@ -43,6 +43,9 @@ namespace My_Little_Store
 
         private void InitializeItems()
         {
+            _player = new Player(100);
+            
+
             Item sword = new Item { Cost = 500, Name = "Swrod" };
 
             Item shield = new Item { Cost = 10, Name = "Shield" };
@@ -103,8 +106,12 @@ namespace My_Little_Store
                 case 0:
                     DisplayOpeningMenu();
                     break;
-                
-                   
+                case 1:
+                    DisplayShopMenu();
+                    break;
+
+
+
             }
         }
 
@@ -113,17 +120,40 @@ namespace My_Little_Store
             int choice = GetInput("Welcomw to My Little Shop Simulator! What Would You Like To Do?", "Start Shopping", "Load Inventory");
             if (choice == 0)
                 _currentScene = 1;
+            if (choice == 1)
+                Load();
 
         }
 
 
         private string[] GetShopMenuOptions()
         {
+            int inventorySize = _shop.GetItemNames().Length;
+            string[] result = new string[inventorySize + 2];
 
+            for (int i = 0; i < inventorySize; i++)
+                result[i] = _shop.GetItemNames()[i];
+
+            result[inventorySize + 1] = "Save Game";
+            result[inventorySize + 2] = "Quit Game";
+
+            return result;
         }
 
         private void DisplayShopMenu()
         {
+
+            int totalInventorySize = GetShopMenuOptions().Length - 2;
+            Console.WriteLine(_player.Gold);
+            Console.WriteLine("Inventory\n");
+
+            for(int i = 0; i < _player.Inventory.Length;i++)
+                Console.WriteLine(_player.Inventory[i]);
+
+            int choice = GetInput("What would you like to purchase?", GetShopMenuOptions());
+
+            if(choice < totalInventorySize)
+
 
         }
 

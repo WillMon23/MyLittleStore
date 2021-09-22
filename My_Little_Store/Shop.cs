@@ -19,11 +19,19 @@ namespace My_Little_Store
         public Shop(params Item[] items)
         {
             _inventory = items;
+            _gold = 0;
         }
 
-        public bool Sell(Player player, int gold)
+        public bool Sell(Player player, int item)
         {
-            if (player.Gold
+            bool purche = false;
+            player.Buy(_inventory[item]);
+
+            if (player.Gold <= _inventory[item].Cost)
+                purche = true;
+            return purche;
+            
+
         }
 
         public string[] GetItemNames()
