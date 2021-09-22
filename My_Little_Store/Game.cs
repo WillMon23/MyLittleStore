@@ -61,16 +61,25 @@ namespace My_Little_Store
             string input = "";
 
             Console.WriteLine(discription);
-
-            for (int i = 0; i < arr.Length; i++)
-                Console.WriteLine((i + 1) + ".");
-            Console.Write("> ");
-
-            input = Console.ReadLine();
-            if (int.TryParse(input, out choice))
+            while (choice == -1)
             {
-                choice--;
-                if (choice < 0 || choice >= arr.Length)
+                for (int i = 0; i < arr.Length; i++)
+                    Console.WriteLine((i + 1) + ". " + arr[i]);
+                Console.Write("> ");
+
+                input = Console.ReadLine();
+                if (int.TryParse(input, out choice))
+                {
+                    choice--;
+                    if (choice < 0 || choice >= arr.Length)
+                    {
+                        choice = -1;
+                        Console.WriteLine("Invalde Input Try Again!");
+                        Console.ReadKey(true);
+                        Console.Clear();
+                    }
+                }
+                else
                 {
                     choice = -1;
                     Console.WriteLine("Invalde Input Try Again!");
@@ -78,14 +87,7 @@ namespace My_Little_Store
                     Console.Clear();
                 }
             }
-            else
-            {
-                choice = -1;
-                Console.WriteLine("Invalde Input Try Again!");
-                Console.ReadKey(true);
-                Console.Clear();
-            }
-
+            Console.Clear();
             return choice;
         }
 
@@ -117,12 +119,12 @@ namespace My_Little_Store
 
         private void DisplayOpeningMenu()
         {
-            int choice = GetInput("Welcomw to My Little Shop Simulator! What Would You Like To Do?", "Start Shopping", "Load Inventory");
+            int choice = GetInput("Welcome to My Little Shop Simulator! What Would You Like To Do?", "Start Shopping", "Load Inventory");
             if (choice == 0)
                 _currentScene = 1;
             if (choice == 1)
                 Load();
-
+            
         }
 
 
@@ -134,8 +136,8 @@ namespace My_Little_Store
             for (int i = 0; i < inventorySize; i++)
                 result[i] = _shop.GetItemNames()[i];
 
-            result[inventorySize + 1] = "Save Game";
-            result[inventorySize + 2] = "Quit Game";
+            result[inventorySize] = "Save Game";
+            result[inventorySize + 1] = "Quit Game";
 
             return result;
         }
@@ -143,16 +145,35 @@ namespace My_Little_Store
         private void DisplayShopMenu()
         {
 
-            int totalInventorySize = GetShopMenuOptions().Length - 2;
-            Console.WriteLine(_player.Gold);
-            Console.WriteLine("Inventory\n");
 
-            for(int i = 0; i < _player.Inventory.Length;i++)
-                Console.WriteLine(_player.Inventory[i]);
+            int totalInventorySize = GetShopMenuOptions().Length - 3;
+            Console.WriteLine("Your gold: " + _player.Gold);
+            Console.WriteLine("Your Inventory: \n");
+
+            for (int i = 0; i < _player.GetItemNames().Length; i++)
+                Console.WriteLine(_player.GetItemNames()[i] + "\n");
 
             int choice = GetInput("What would you like to purchase?", GetShopMenuOptions());
 
-            if(choice < totalInventorySize)
+
+            if (choice <= totalInventorySize)
+            {
+                if (_shop.Sell(_player, choice))
+                {
+                    Console.WriteLine("You purchased the " + _shop.GetItemNames()[choice]);
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+
+                else
+                {
+                    Console.WriteLine("You don't have enough for that.");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+            }
+            else if (choice == GetShopMenuOptions().Length - 1)
+                    _gameOver = true;
 
 
         }

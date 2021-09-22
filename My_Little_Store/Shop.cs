@@ -24,20 +24,23 @@ namespace My_Little_Store
 
         public bool Sell(Player player, int item)
         {
-            bool purche = false;
-            player.Buy(_inventory[item]);
+            bool purches = false;
+            if (player.Gold >= _inventory[item].Cost)
+            {
+                purches = true;
 
-            if (player.Gold <= _inventory[item].Cost)
-                purche = true;
-            return purche;
-            
+                _gold += _inventory[item].Cost;
 
+                player.Buy(_inventory[item]);
+            }
+
+            return purches;
         }
 
         public string[] GetItemNames()
         {
             string[] names = new string[_inventory.Length];
-            for (int i = 0; i <= _inventory.Length; i++)
+            for (int i = 0; i < _inventory.Length; i++)
                 names[i] = _inventory[i].Name;
             return names;
 
