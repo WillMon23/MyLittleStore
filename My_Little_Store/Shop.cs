@@ -16,20 +16,22 @@ namespace My_Little_Store
 
         private Item[] _inventory;
 
-        public Item[] Inventory;
-
-        public Shop(Item[] items)
+        public Shop(params Item[] items)
         {
-
+            _inventory = items;
         }
 
         public bool Sell(Player player, int gold)
         {
-            return false;
+            if (player.Gold
         }
 
         public string[] GetItemNames()
         {
+            string[] names = new string[_inventory.Length];
+            for (int i = 0; i <= _inventory.Length; i++)
+                names[i] = _inventory[i].Name;
+            return names;
 
         }
     }    
