@@ -38,7 +38,9 @@ namespace My_Little_Store
 
         private void End()
         {
-
+            Console.WriteLine("Thanks for shopping in My Little Store, Good Bye");
+            Console.ReadKey(true);
+            Console.Clear();
         }
 
         private void InitializeItems()
@@ -93,12 +95,28 @@ namespace My_Little_Store
 
         private void Save()
         {
+            StreamWriter writer = new StreamWriter("SaveData.txt");
 
+            writer.WriteLine(_currentScene);
+
+            _player.Save(writer);
+
+            writer.Close();
         }
 
-        private void Load()
+        private bool Load()
         {
+            bool loaded = false;
+            StreamReader load = new StreamReader("SaveData.txt");
 
+            if (int.TryParse(load.ReadLine(), out _currentScene))
+                return true;
+
+            if (_player.Load(load))
+                loaded = true;
+
+            load.Close();
+            return loaded;
         }
 
         private void DisplayCurrentScene()
@@ -111,9 +129,6 @@ namespace My_Little_Store
                 case 1:
                     DisplayShopMenu();
                     break;
-
-
-
             }
         }
 
@@ -123,7 +138,10 @@ namespace My_Little_Store
             if (choice == 0)
                 _currentScene = 1;
             if (choice == 1)
-                Load();
+                if (Load())
+                    Console.WriteLine("Load Was Succsessful");
+                else
+                    Console.WriteLine("Failed to Load");
             
         }
 
@@ -172,8 +190,17 @@ namespace My_Little_Store
                     Console.Clear();
                 }
             }
-            else if (choice == GetShopMenuOptions().Length - 1)
-                    _gameOver = true;
+
+            else if (choice == (totalInventorySize + 1))
+            { 
+                Save();
+                Console.WriteLine("Save was succsessful");
+                Console.ReadLine();
+                Console.Clear();
+            }
+
+            else if (choice == (totalInventorySize + 2))
+                _gameOver = true;
 
 
         }
