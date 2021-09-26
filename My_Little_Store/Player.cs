@@ -57,35 +57,40 @@ namespace My_Little_Store
             foreach(Item item in _inventory)
             {
                 save.WriteLine(item.Name);
+
                 save.WriteLine(item.Cost);
 
             }
+            save.Close();
         }
 
         public bool Load(StreamReader load)
         {
-            bool loaded = false;
+            
             int arrySize = 0;
 
             string loadGold = load.ReadLine();
 
-            if(int.TryParse(loadGold, out _gold))
-                loaded = true;
+            if(!int.TryParse(loadGold, out _gold))
+                return false;
 
-            if (int.TryParse(load.ReadLine(), out arrySize))
-                return true;
+            if (!int.TryParse(load.ReadLine(), out arrySize))
+                return false;
 
             _inventory = new Item[arrySize];
 
             for(int i = 0; i < _inventory.Length; i++)
             {
-                if (int.TryParse(load.ReadLine(), out _inventory[i].Cost))
-                    loaded = true;
-
                 _inventory[i].Name = load.ReadLine();
-            }
 
-            return loaded;
+                if (!int.TryParse(load.ReadLine(), out _inventory[i].Cost))
+                    return  false;
+
+                
+            }
+            load.Close();
+
+            return true;
         }
     }
 }

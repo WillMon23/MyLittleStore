@@ -106,17 +106,19 @@ namespace My_Little_Store
 
         private bool Load()
         {
-            bool loaded = false;
+            if (!File.Exists("SaveData.txt"))
+                return false;
+
             StreamReader load = new StreamReader("SaveData.txt");
 
-            if (int.TryParse(load.ReadLine(), out _currentScene))
-                return true;
+            if (!int.TryParse(load.ReadLine(), out _currentScene))
+                return false;
 
-            if (_player.Load(load))
-                loaded = true;
+            if (!_player.Load(load))
+                return false;
 
             load.Close();
-            return loaded;
+            return true;
         }
 
         private void DisplayCurrentScene()
@@ -139,10 +141,17 @@ namespace My_Little_Store
                 _currentScene = 1;
             if (choice == 1)
                 if (Load())
+                {
                     Console.WriteLine("Load Was Succsessful");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
                 else
+                {
                     Console.WriteLine("Failed to Load");
-            
+                    Console.ReadKey();
+                    Console.Clear();
+                }    
         }
 
 
