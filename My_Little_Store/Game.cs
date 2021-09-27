@@ -106,8 +106,10 @@ namespace My_Little_Store
 
         private bool Load()
         {
+
             if (!File.Exists("SaveData.txt"))
                 return false;
+
 
             StreamReader load = new StreamReader("SaveData.txt");
 
@@ -118,6 +120,7 @@ namespace My_Little_Store
                 return false;
 
             load.Close();
+
             return true;
         }
 
@@ -137,21 +140,29 @@ namespace My_Little_Store
         private void DisplayOpeningMenu()
         {
             int choice = GetInput("Welcome to My Little Shop Simulator! What Would You Like To Do?", "Start Shopping", "Load Inventory");
-            if (choice == 0)
-                _currentScene = 1;
-            if (choice == 1)
-                if (Load())
-                {
-                    Console.WriteLine("Load Was Succsessful");
-                    Console.ReadKey();
-                    Console.Clear();
-                }
-                else
-                {
-                    Console.WriteLine("Failed to Load");
-                    Console.ReadKey();
-                    Console.Clear();
-                }    
+
+            switch (choice)
+            {
+                case 0:
+                    _currentScene++;
+                    break;
+
+                case 1:
+                    if (Load())
+                    {
+                        Console.WriteLine("Load Was Succsessful");
+                        Console.ReadKey(true);
+                        Console.Clear();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to Load");
+                        Console.ReadKey(true);
+                        Console.Clear();
+                    }
+            break;
+            }
+
         }
 
 

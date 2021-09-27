@@ -56,12 +56,11 @@ namespace My_Little_Store
 
             foreach(Item item in _inventory)
             {
-                save.WriteLine(item.Name);
-
+                
                 save.WriteLine(item.Cost);
 
+                save.WriteLine(item.Name);
             }
-            save.Close();
         }
 
         public bool Load(StreamReader load)
@@ -81,15 +80,13 @@ namespace My_Little_Store
 
             for(int i = 0; i < _inventory.Length; i++)
             {
-                _inventory[i].Name = load.ReadLine();
 
                 if (!int.TryParse(load.ReadLine(), out _inventory[i].Cost))
-                    return  false;
+                    return false;
 
-                
+
+                _inventory[i].Name = load.ReadLine();
             }
-            load.Close();
-
             return true;
         }
     }
