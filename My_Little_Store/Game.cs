@@ -5,11 +5,21 @@ using System.IO;
 
 namespace My_Little_Store
 {
+    public enum Scen 
+    {
+        INTRODUCTION,
+        PLAYERNAME,
+        SHOP,
+        BATTLE,
+        LOADORSAVE,
+
+    }
     /// <summary>
     /// Core oporations of the game
     /// </summary>
     class Game
     {
+
         //How the player items and gold kept tracked 
         Player _player;
 
@@ -20,7 +30,10 @@ namespace My_Little_Store
         bool _gameOver;
         
         //Keeps track of the current scene being played on
-        int _currentScene;
+        Scen _currentScene;
+
+        //Hold Players Name
+        string _usersName = "Defult";
 
         /// <summary>
         /// Runs the whole game when started  
@@ -47,6 +60,30 @@ namespace My_Little_Store
             
             //Initializes the Curent Items in the game
             InitializeItems();
+            
+        }
+
+        private void GetPlayersName()
+        {
+
+            Console.WriteLine("Lets Start With You Name");
+
+            _usersName = Console.ReadLine();
+            Console.Clear();
+
+            if (GetInput("You Chose the Name" + _usersName + " would You Like To Continue", "Yes", "No") == 0)
+                _currentScene = Scen.SHOP;
+            }
+            /// <summary>
+            /// Initialize players and the enemies implamanted in the game 
+            /// </summary>
+            private void InitializePlayerAndEnemy()
+        {
+            //Sets players allowance
+
+
+            _player = new Player(_usersName, 2000f, 20f, 20f, 100);
+
         }
 
         /// <summary>
@@ -74,11 +111,10 @@ namespace My_Little_Store
         /// </summary>
         private void InitializeItems()
         {
-            //Sets players allowance
-            _player = new Player(100);
+
             
             //Sets the Cost for a swrod
-            Item sword = new Item { Cost = 500, Name = "Sword" };
+            Item sword = new Item { Cost = 25, Name = "Sword" };
 
             //Sets the Cost for a Shield 
             Item shield = new Item { Cost = 10, Name = "Shield" };
@@ -183,10 +219,6 @@ namespace My_Little_Store
             //Creats a streamerader so we can refur to that file
             StreamReader load = new StreamReader("SaveData.txt");
 
-            //if the next line in the text file reads is not a int. . .
-            if (!int.TryParse(load.ReadLine(), out _currentScene))
-                //returns false
-                return false;
             //if player didn't load properly
             if (!_player.Load(load))
                 // returns false
@@ -206,14 +238,17 @@ namespace My_Little_Store
             // Loooks to see what scene were in. . .
             switch (_currentScene)
             {
-                //. . .if the scene were in is 0
-                case 0:
-                    //Displays Opening Menu
+                case Scen.PLAYERNAME:
+                    GetPlayersName();
+                    break;
+                //. . .if the scene set to Introduction. . .
+                case Scen.INTRODUCTION:
+                    //...Displays Opening Menu
                     DisplayOpeningMenu();
                     break;
-                //. . .if the scene were in is 1
-                case 1:
-                    //Display Shop Menu 
+                //. . .if the scene were in is Shop
+                case Scen.SHOP:
+                    //. . .Display Shop Menu 
                     DisplayShopMenu();
                     break;
             }
@@ -223,7 +258,7 @@ namespace My_Little_Store
         private void DisplayOpeningMenu()
         {
             //Gathers uers input and turns it to a int value so that it can be interpreted
-            int choice = GetInput("Welcome to My Little Shop Simulator! What Would You Like To Do?", "Start Shopping", "Load Inventory");
+            int choice = GetInput("Welcome to Death Battle! Where You Endlessly fight Enemies Till Your Heart Content, What Would You Like To Do?", "Get Bonuses Shopping", "Load Inventory", "Start Fighting");
 
             //Checks to see what the users input was. . . 
             switch (choice)
@@ -231,26 +266,15 @@ namespace My_Little_Store
                 //. . .if chioce is 0 
                 case 0:
                     //Scrolles to the next scene
-                    _currentScene++;
+                    _currentScene = Scen.SHOP;
                     break;
                 //. . .if choice is 1 
                 case 1:
-                    //Scene get updated by the save file and the player stats get updated from the save file if true. . .
-                    if (Load())
-                    {
-                        //Load was succsessful 
-                        Console.WriteLine("Load Was Succsessful");
-                        Console.ReadKey(true);
-                        Console.Clear();
-                    }
-                    //else. . . 
-                    else
-                    {
-                        //Load Has Failed so it refected by a ERROR message 
-                        Console.WriteLine("Failed to Load");
-                        Console.ReadKey(true);
-                        Console.Clear();
-                    }
+                    _currentScene = Scen.LOADORSAVE;
+                    break;
+
+                case 2:
+                    _currentScene = Scen.BATTLE;
                     break;
             }
         }
@@ -273,7 +297,7 @@ namespace My_Little_Store
                 //. . . if that point of the index equals 'Sword' . . .
                 if (_shop.GetItemNames()[i] == "Sword")
                     //. . . add ' - 500g' at the end of it
-                    result[i] = _shop.GetItemNames()[i] + " - 500g";
+                    result[i] = _shop.GetItemNames()[i] + " - 25";
                 //. . . if that point of the index equals 'Shield' . . . 
                 else if (_shop.GetItemNames()[i] == "Shield")
                     //. . . .add ' - 10g' to the end of it

@@ -8,7 +8,7 @@ namespace My_Little_Store
     /// <summary>
     /// The Decloration of what it means to be a player 
     /// </summary>
-    class Player
+    class Player : Entity
     {
         // Gold the player will hold 
         private  int _gold;
@@ -23,12 +23,13 @@ namespace My_Little_Store
         /// Creats a player costructer in order to set the players gold
         /// </summary>
         /// <param name="gold">Gold Set to the player</param>
-        public Player(int gold)
+        public Player(string name,float health,float attack, float defense, int gold ) : base( name, health, attack, defense)
         {
             _gold = gold;
             _inventory = new Item[0];
         }
 
+   
         /// <summary>
         /// Function that places items they but into there inventory 
         /// </summary>
