@@ -19,6 +19,7 @@ namespace My_Little_Store
         private float _defenseBoost;
 
         public string Name { get { return _name; } }
+
         public float HitPoint { get { return _hitPoints; } }
 
         public float Attack { get { return _attack; } }

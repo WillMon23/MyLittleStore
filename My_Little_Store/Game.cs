@@ -7,8 +7,8 @@ namespace My_Little_Store
 {
     public enum Scen 
     {
-        INTRODUCTION,
         PLAYERNAME,
+        INTRODUCTION,
         SHOP,
         BATTLE,
         LOADORSAVE,
@@ -23,14 +23,17 @@ namespace My_Little_Store
         //How the player items and gold kept tracked 
         Player _player;
 
+        //The Size of the wave op enemies 
+        Entity[] _enemys;
+
         //How the shop is kept tracked of  
         Shop _shop;
 
         //Keeps track of the game if its over or not 
         bool _gameOver;
-        
+
         //Keeps track of the current scene being played on
-        Scen _currentScene;
+        Scen _currentScene = Scen.INTRODUCTION;
 
         //Hold Players Name
         string _usersName = "Defult";
@@ -39,7 +42,7 @@ namespace My_Little_Store
         /// Runs the whole game when started  
         /// </summary>
         public void Run()
-        { 
+        {
             Start();
 
             while (!_gameOver)
@@ -57,27 +60,27 @@ namespace My_Little_Store
 
             //Sets Current Scene to the first scene
             _currentScene = 0;
-            
+
             //Initializes the Curent Items in the game
             InitializeItems();
-            
+
         }
 
         private void GetPlayersName()
-        {
-
+        { 
             Console.WriteLine("Lets Start With You Name");
 
             _usersName = Console.ReadLine();
             Console.Clear();
 
             if (GetInput("You Chose the Name" + _usersName + " would You Like To Continue", "Yes", "No") == 0)
-                _currentScene = Scen.SHOP;
-            }
-            /// <summary>
-            /// Initialize players and the enemies implamanted in the game 
-            /// </summary>
-            private void InitializePlayerAndEnemy()
+                _currentScene = Scen.BATTLE;
+        }
+
+        /// <summary>
+        /// Initialize players and the enemies implamanted in the game 
+        /// </summary>
+        private void InitializePlayerAndEnemy()
         {
             //Sets players allowance
 
@@ -93,6 +96,7 @@ namespace My_Little_Store
         {
             //Dispalys Current Scene
             DisplayCurrentScene();
+            InitializePlayerAndEnemy();
         }
 
         /// <summary>
@@ -257,12 +261,14 @@ namespace My_Little_Store
         //Dispalys Opening Menu 
         private void DisplayOpeningMenu()
         {
+            
             //Gathers uers input and turns it to a int value so that it can be interpreted
-            int choice = GetInput("Welcome to Death Battle! Where You Endlessly fight Enemies Till Your Heart Content, What Would You Like To Do?", "Get Bonuses Shopping", "Load Inventory", "Start Fighting");
+            int choice = GetInput("Welcome to Death Battle! Where You Endlessly fight Enemies Till Your Heart Content, What Would You Like To Do?", "Get Bonuses Shopping", "Load Inventory", "Back To Battle");
 
             //Checks to see what the users input was. . . 
             switch (choice)
             {
+
                 //. . .if chioce is 0 
                 case 0:
                     //Scrolles to the next scene
@@ -274,7 +280,7 @@ namespace My_Little_Store
                     break;
 
                 case 2:
-                    _currentScene = Scen.BATTLE;
+                    _currentScene = Scen.PLAYERNAME;
                     break;
             }
         }
@@ -293,25 +299,9 @@ namespace My_Little_Store
 
             //For every index in the menu size. . .  
             for (int i = 0; i < menuSize; i++)
-            {
-                //. . . if that point of the index equals 'Sword' . . .
-                if (_shop.GetItemNames()[i] == "Sword")
-                    //. . . add ' - 500g' at the end of it
-                    result[i] = _shop.GetItemNames()[i] + " - 25";
-                //. . . if that point of the index equals 'Shield' . . . 
-                else if (_shop.GetItemNames()[i] == "Shield")
-                    //. . . .add ' - 10g' to the end of it
-                    result[i] = _shop.GetItemNames()[i] + " - 10g";
-                //. . . if that point of the index equals 'Health Postion' . . .
-                else if (_shop.GetItemNames()[i] == "Health Postion")
-                    //. . . .add ' - 15g' to the end of it
-                    result[i] = _shop.GetItemNames()[i] + " - 15g";
-                //. . . Other wise . . .
-                else
                     //. . . Just Plug it In
                     result[i] = _shop.GetItemNames()[i];
-            }
-
+            
             //sets the current size to be 'Save Game'
             result[menuSize] = "Save Game";
             //Sets the size plus one to be 'Quit Game'
