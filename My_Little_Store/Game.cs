@@ -245,6 +245,35 @@ namespace My_Little_Store
             writer.Close();
         }
 
+        //Chec
+        private void PotionUsed()
+        {
+            if (_player.NeedHealing() != 0)
+            {
+                int _potionUsed = _player.NeedHealing() - _player.PotionCount;
+                if (_potionUsed != 0)
+                {
+                    if (GetInput("You Have " + _potionUsed + " Health Potion, Would You Like To Use One?", "Yes", "No") == 0)
+                    {
+                        _player.UsePotion(50);
+                        Console.WriteLine("You Used 1 Health Potion");
+                    }
+                    else
+                        Console.WriteLine("Health Potion Was Not Consumed");
+                }
+                else
+                    Console.WriteLine("You Ran Out Of Potions");
+
+                Console.ReadKey(true);
+                Console.Clear();
+            }
+            else
+            {
+                Console.WriteLine("You Don't Have Any HealthPotions");
+                Console.ReadKey(true);
+                Console.Clear();
+            }
+        }
         /// <summary>
         /// Load from the text file
         /// </summary>
@@ -520,33 +549,7 @@ namespace My_Little_Store
                     }break;
 
                 case 1:
-
-                    if (_player.NeedHealing() != 0)
-                    {
-                        int _potionUsed =_player.NeedHealing() - _player.PotionCount;
-                        if (_potionUsed != 0)
-                        {
-                            if (GetInput("You Have " + _potionUsed + " Health Potion, Would You Like To Use One?", "Yes", "No") == 0)
-                            {
-                                _player.UsePotion(50);
-                                Console.WriteLine("You Used 1 Health Potion");
-                            }
-                            else
-                                Console.WriteLine("Health Potion Was Not Consumed");
-                        }
-                        else
-                            Console.WriteLine("You Ran Out Of Potions");
-
-                        Console.ReadKey(true);
-                        Console.Clear();
-                    }
-                    else
-                    {
-                        Console.WriteLine("You Don't Have Any HealthPotions");
-                        Console.ReadKey(true);
-                        Console.Clear();
-                    }
-
+                    PotionUsed();
                     break;
                 case 2:
                     if (_player.BonusItemsUse())
