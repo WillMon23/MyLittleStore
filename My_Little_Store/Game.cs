@@ -7,9 +7,10 @@ namespace My_Little_Store
 {
     public enum Scen
     {
+        PLAYERNAME,
         INTRODUCTION,
         SHOP,
-        PLAYERNAME,
+        
         BATTLE,
         LOADORSAVE,
     }
@@ -93,7 +94,6 @@ namespace My_Little_Store
         /// </summary>
         private void InitializePlayerAndEnemy()
         {
-            int round = 10;
 
             //Sets players allowance
 
@@ -241,8 +241,6 @@ namespace My_Little_Store
 
             //closes the file when done 
             writer.Close();
-
-            
         }
 
         /// <summary>
@@ -268,6 +266,32 @@ namespace My_Little_Store
             load.Close();
             // Returns true if everything loaded properlly 
             return true;
+        }
+
+        private void StartMenu()
+        {
+            int choice = GetInput("Start Menu", "Start Game", "Load Game");
+            switch (choice)
+            {
+                case 0:
+                    _currentScene = Scen.INTRODUCTION;
+                    break;
+                case 1:
+                    if (Load())
+                    {
+                        Console.WriteLine("Load was successful");
+                        Console.ReadKey(true);
+                        Console.Clear();
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to Load");
+                        Console.ReadKey(true);
+                        Console.Clear();
+                    }
+                    break;
+            }
         }
 
         /// <summary>
@@ -481,6 +505,8 @@ namespace My_Little_Store
             }
             
         }
+
+        
 
         private void BattleResults()
         {
