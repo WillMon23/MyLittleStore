@@ -8,7 +8,7 @@ namespace My_Little_Store
     public enum Scen 
     {
         PLAYERNAME,
-        INTRODUCTION,
+        INTRODUCTION, 
         SHOP,
         BATTLE,
         LOADORSAVE,
@@ -25,6 +25,8 @@ namespace My_Little_Store
 
         //The Size of the wave op enemies 
         Entity[] _enemys;
+
+        Entity _currentEnemy; 
 
         //How the shop is kept tracked of  
         Shop _shop;
@@ -63,6 +65,8 @@ namespace My_Little_Store
 
             //Initializes the Curent Items in the game
             InitializeItems();
+            
+            InitializePlayerAndEnemy();
 
         }
 
@@ -73,8 +77,8 @@ namespace My_Little_Store
             _usersName = Console.ReadLine();
             Console.Clear();
 
-            if (GetInput("You Chose the Name" + _usersName + " would You Like To Continue", "Yes", "No") == 0)
-                _currentScene = Scen.BATTLE;
+            if (GetInput("You Choose the Name " + _usersName + " Would You Like To Continue", "Yes", "No") == 0)
+                _currentScene = Scen.INTRODUCTION;
         }
 
         /// <summary>
@@ -82,10 +86,13 @@ namespace My_Little_Store
         /// </summary>
         private void InitializePlayerAndEnemy()
         {
+            int round = 10;
+
             //Sets players allowance
-
-
             _player = new Player(_usersName, 2000f, 20f, 20f, 100);
+
+            _currentEnemy = new Entity("Elfoo",20f, 30f, 30f, 10);
+
 
         }
 
@@ -96,7 +103,7 @@ namespace My_Little_Store
         {
             //Dispalys Current Scene
             DisplayCurrentScene();
-            InitializePlayerAndEnemy();
+            
         }
 
         /// <summary>
@@ -124,10 +131,10 @@ namespace My_Little_Store
             Item shield = new Item { Cost = 10, Name = "Shield" };
 
             // Sets the Cost for a Health Postion
-            Item healthPostion = new Item { Cost = 15, Name = "Health Postion" };
+            Item healthPotion = new Item { Cost = 15, Name = "Health Potion" };
 
             //creats the shops inventory 
-            _shop = new Shop(sword, shield, healthPostion);
+            _shop = new Shop(sword, shield, healthPotion);
         }
 
         /// <summary>
@@ -255,6 +262,9 @@ namespace My_Little_Store
                     //. . .Display Shop Menu 
                     DisplayShopMenu();
                     break;
+                case Scen.BATTLE:
+                    Battle();
+                    break;
             }
         }
 
@@ -367,6 +377,11 @@ namespace My_Little_Store
                 _gameOver = true;
 
 
+        }
+
+        private void Battle()
+        {
+            Console.WriteLine("");
         }
 
     }

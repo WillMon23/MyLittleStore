@@ -75,7 +75,7 @@ namespace My_Little_Store
             //for every item in that index. . .
             for (int i = 0; i < _inventory.Length; i++)
                 //. . . put the name of that index in the name array
-                names[i] = _inventory[i].Name + " - " + _inventory[i].Cost;
+                names[i] = _inventory[i].Name + " - " + _inventory[i].Cost + "g";
             // returns The names of all the items in the store
             return names;
 

@@ -14,19 +14,33 @@ namespace My_Little_Store
         private  int _gold;
 
         // Players Inventory, if they buy something it will be added here  
-        private Item[] _inventory;
+        private Item[] _inventory;    
+
+        private float _defenseBoost;
+
+        private float _attackBoost;
 
         //Gold set to a property only allowing othere classes to view the gold amount
         public int Gold { get { return _gold; } }
+        
+         public float AttackBoost { get { return _attackBoost; } set { _attackBoost = value; } }
+
+        public float DefenseBoost { get { return _defenseBoost; } set { _defenseBoost = value; } }
 
         /// <summary>
         /// Creats a player costructer in order to set the players gold
         /// </summary>
         /// <param name="gold">Gold Set to the player</param>
-        public Player(string name,float health,float attack, float defense, int gold ) : base( name, health, attack, defense)
+        public Player(string name,float health, float attack, float defense, int gold ) : base( name, health, attack, defense, gold)
         {
             _gold = gold;
+
             _inventory = new Item[0];
+
+            _attackBoost = HitPoint;
+
+            _defenseBoost = Defense;
+
         }
 
    
@@ -52,9 +66,30 @@ namespace My_Little_Store
                     // . .. place it in the new array
                     placeHolder[i] = _inventory[i];
                 //Once done add the new item bought
+
                 placeHolder[_inventory.Length] = item;
                 //Then replace the current array with the new array 
                 _inventory = placeHolder;
+            }
+        }
+
+        public void BonusItemsUse()
+        {
+            
+            if(_inventory.Length != 0)
+            {
+                foreach (Item item in _inventory)
+                {
+                    if (item.Name == "Sword")
+                        _attackBoost = +20;
+
+                    else if (item.Name == "Shield")
+                        _defenseBoost =+ 5;
+
+                    else if (item.Name == "Health Potion")
+                        HitPoint =+ 15;
+                }
+
             }
         }
 
@@ -81,7 +116,7 @@ namespace My_Little_Store
         /// Saves the values currently collected by the player
         /// </summary>
         /// <param name="save">Wehre to save all of the players information</param>
-        public void Save(StreamWriter save)
+        public override void Save(StreamWriter save)
         {
             //Writes to file how much gold the player has
             save.WriteLine(_gold);
@@ -103,7 +138,7 @@ namespace My_Little_Store
         /// </summary>
         /// <param name="load">Wehre to load all of the players information</param>
         /// <returns>true if its been read correctly, false if failed to laod</returns>
-        public bool Load(StreamReader load)
+        public override bool Load(StreamReader load)
         {
             //Reads the next line in the save file and sets the value to _gold if its a int 
             if(!int.TryParse(load.ReadLine(), out _gold))
