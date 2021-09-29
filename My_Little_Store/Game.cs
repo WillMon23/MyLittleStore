@@ -24,11 +24,10 @@ namespace My_Little_Store
 
         //How the player items and gold kept tracked 
         Player _player;
+        
+        Entity _elfoo;
 
-        //The Size of the wave op enemies 
-        Entity[] _enemys;
-
-        Entity _currentEnemy; 
+        int _enemyCount;
 
         //How the shop is kept tracked of  
         Shop _shop;
@@ -78,7 +77,7 @@ namespace My_Little_Store
 
         private void GetPlayersName()
         { 
-            Console.WriteLine("Lets Start With You Name");
+            Console.WriteLine("Lets Start With You're Name");
 
             _usersName = Console.ReadLine();
             Console.Clear();
@@ -106,7 +105,9 @@ namespace My_Little_Store
 
             _enemyGold = 15;
 
-            _currentEnemy = new Entity("Elfoo", _enemyHP, _enemyAtt, _enemyDef, _enemyGold);
+            _enemyCount = 1;
+
+            _elfoo = new Entity("Elfoo", _enemyHP, _enemyAtt, _enemyDef, _enemyGold);
 
             _player = new Player(_usersName, 2000f, 20f, 20f, 100);
 
@@ -142,13 +143,13 @@ namespace My_Little_Store
 
             
             //Sets the Cost for a swrod
-            Item sword = new Item { Cost = 25, Name = "Sword" };
+            Item sword = new Item { Cost = 25, Name = "Sword", Potence = 25 };
 
             //Sets the Cost for a Shield 
-            Item shield = new Item { Cost = 10, Name = "Shield" };
+            Item shield = new Item { Cost = 10, Name = "Shield", Potence = 10 };
 
             // Sets the Cost for a Health Postion
-            Item healthPotion = new Item { Cost = 15, Name = "Health Potion" };
+            Item healthPotion = new Item { Cost = 15, Name = "Health Potion", Potence = 50 };
 
             //creats the shops inventory 
             _shop = new Shop(sword, shield, healthPotion);
@@ -238,6 +239,8 @@ namespace My_Little_Store
             //Saves the players writes stats to that text file 
             _player.Save(writer);
 
+            _elfoo.Save(writer);
+
             //closes the file when done 
             writer.Close();
         }
@@ -256,9 +259,18 @@ namespace My_Little_Store
             //Creats a streamerader so we can refur to that file
             StreamReader load = new StreamReader("SaveData.txt");
 
+            if (!Scen.TryParse(load.ReadLine(), out _currentScene))
+            {
+                return false; 
+            }
+
+
             //if player didn't load properly
             if (!_player.Load(load))
                 // returns false
+                return false;
+
+            if (!_elfoo.Load(load))
                 return false;
 
             //Closes the file when done using it 
@@ -359,7 +371,7 @@ namespace My_Little_Store
 
         private void LoadOrSaveMenu()
         {
-            int choice = GetInput("Laod and Saving Menu, What Will You Do Next", "Load", "Save", "Quit Game");
+            int choice = GetInput("Laod and Saving Menu, What Will You Do Next","Save" , "Load", "Back To Main Menu", "Quit Game");
 
             switch (choice)
             {
@@ -372,8 +384,13 @@ namespace My_Little_Store
                 case 1:
                     if (Load())
                         Console.WriteLine("Welcome Back");
+                    else
+                        Console.WriteLine("Load Attempt Failed ");
                     break;
                 case 2:
+                    _currentScene = Scen.MAINMENU;
+                    break;
+                case 3:
                     _gameOver = true;
                     break;
 
@@ -398,7 +415,7 @@ namespace My_Little_Store
                     result[i] = _shop.GetItemNames()[i];
             
             //sets the current size to be 'Save Game'
-            result[menuSize] = "Go To Battle";
+            result[menuSize] = "Back TO Main Menu";
             //Sets the size plus one to be 'Quit Game'
             result[menuSize + 1] = "Quit Game";
 
@@ -466,7 +483,7 @@ namespace My_Little_Store
             }
             // if the choice happens to bt the size plus 1. . .
             else if (choice == (totalInventorySize + 1))
-                _currentScene = Scen.BATTLE;
+                _currentScene = Scen.MAINMENU;
 
             
             // if the choice happens to bt the size plus 2. . .
@@ -482,36 +499,79 @@ namespace My_Little_Store
             PrintStats(_player);
             
 
-            PrintStats(_currentEnemy);
+            PrintStats(_elfoo);
 
-            int choice = GetInput("You've Come Accross " + _currentEnemy.Name + ", What Will You Do Next?","Attack","Heal","Save", "Back To Main Menu");
+            int choice = GetInput("You've Come Accross " + _elfoo.Name + ", What Will You Do Next?","Attack","Heal", "Equip Bonuses", "Save", "Back To Main Menu");
 
-            _player.BonusItemsUse();
+            
 
             switch (choice)
             {
                 case 0:
-                    Console.WriteLine("You Delt " + _player.Attack(_currentEnemy) + " " + _currentEnemy.Name);
+                    Console.WriteLine("You Delt " + _player.Attack(_elfoo) + " " + _elfoo.Name);
                     Console.ReadKey(true);
                     Console.Clear();
     
                     if (rng.Next(1, 10) == 1)
                     {
-                        Console.WriteLine("You took " + _currentEnemy.Attack(_player) + " Hit Points ");
+                        Console.WriteLine("You took " + _elfoo.Attack(_player) + " Hit Points ");
                         Console.ReadKey(true);
                         Console.Clear();
                     }break;
 
                 case 1:
+
                     if (_player.NeedHealing() != 0)
-                        Console.WriteLine("You Have " + _player.NeedHealing() + " Health Potion");
+                    {
+                        int _potionUsed =_player.NeedHealing() - _player.PotionCount;
+                        if (_potionUsed != 0)
+                        {
+                            if (GetInput("You Have " + _potionUsed + " Health Potion, Would You Like To Use One?", "Yes", "No") == 0)
+                            {
+                                _player.UsePotion(50);
+                                Console.WriteLine("You Used 1 Health Potion");
+                            }
+                            else
+                                Console.WriteLine("Health Potion Was Not Consumed");
+                        }
+                        else
+                            Console.WriteLine("You Ran Out Of Potions");
+
+                        Console.ReadKey(true);
+                        Console.Clear();
+                    }
+                    else
+                    {
+                        Console.WriteLine("You Don't Have Any HealthPotions");
+                        Console.ReadKey(true);
+                        Console.Clear();
+                    }
 
                     break;
-
                 case 2:
-                    _currentScene = Scen.LOADORSAVE;
+                    if (_player.BonusItemsUse())
+                    {
+                        Console.WriteLine("Stats Have Been Modified");
+                        Console.ReadKey(true);
+                        Console.Clear();
+                    }
+                    else
+                    {
+                        Console.WriteLine("You Dont Have Any Modifires");
+                        Console.ReadKey(true);
+                        Console.Clear();
+                    }
                     break;
                 case 3:
+                    Save();
+                    Console.WriteLine("Save Was Succsessful");
+                    Console.ReadKey(true);
+                    Console.Clear();
+                    break;
+                case 4:
+                    Console.WriteLine("Head Back To The Main Menu");
+                    Console.ReadKey(true);
+                    Console.Clear();
                     _currentScene = Scen.MAINMENU;
                     break;
 
@@ -526,17 +586,18 @@ namespace My_Little_Store
                 Console.WriteLine(_player.Name + " You're Died!");
                 _currentScene = Scen.LOADORSAVE;
             }
-            if(_currentEnemy.HitPoint <= 0)
+            if(_elfoo.HitPoint <= 0)
             {
-                Console.WriteLine(_currentEnemy.Name + " Has Met There End!!!" + 
-                    "\nYou Won " + _player.GoldWon(_currentEnemy) + "g");
+                Console.WriteLine(_elfoo.Name + " Has Met There End!!!" + 
+                    "\nYou Won " + _player.GoldWon(_elfoo) + "g");
                 Console.ReadKey();
                 Console.Clear();
 
                 switch ((GetInput("Would you like to do next?!", "Start A New Fight", "Back To Main Menu")))
                 {
                     case 0:
-                        _currentEnemy = new Entity("Elfoo", (_enemyHP *= 2), (_enemyAtt *= 2), _enemyDef, (_enemyGold *= 2));
+                        _enemyCount++;
+                        _elfoo = new Entity("Elfoo #" + _enemyCount, (_enemyHP *= 2), (_enemyAtt *= 2), _enemyDef, (_enemyGold *= 2));
                         break;
                     case 1:
                         _currentScene = Scen.MAINMENU;

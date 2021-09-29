@@ -81,7 +81,7 @@ namespace My_Little_Store
             writer.WriteLine(_hitPoints);
             writer.WriteLine(_attack);
             writer.WriteLine(_defense);
-
+            writer.WriteLine(_goldEarn);
         }
 
         public virtual bool Load(StreamReader reader)
@@ -97,6 +97,8 @@ namespace My_Little_Store
             if (!float.TryParse(reader.ReadLine(), out _defense))
                 return false;
 
+            if (!int.TryParse(reader.ReadLine(), out _goldEarn))
+                return false;
 
             return true;
         }

@@ -79,31 +79,39 @@ namespace My_Little_Store
             }
         }
 
-        public void BonusItemsUse()
+        public bool BonusItemsUse()
         {
             
             if(_inventory.Length != 0)
             {
+                
                 foreach (Item item in _inventory)
                 { 
                     if (item.Name == "Sword")
-                        AttackIncrease(20);
+                        AttackIncrease(item.Potence);
 
                     else if (item.Name == "Shield")
-                        DefenseIncrease(10);
+                        DefenseIncrease(item.Potence);
                 }
+                return true;
             }
+            return false;
         }
 
         public int NeedHealing()
         {
+            int totalCount = 0;
             foreach (Item item in _inventory)
-                if(item.Name == "Health Potion")
-                    _potionCount++;
-            
+                if (item.Name == "Health Potion")
+                    totalCount++;
 
-            
-            return PotionCount;
+            return totalCount;
+        }
+
+        public void UsePotion(int healthGain)
+        {
+            _potionCount++;
+            HitPoint += healthGain;
         }
 
 
@@ -137,40 +145,48 @@ namespace My_Little_Store
         /// <summary>
         /// Saves the values currently collected by the player
         /// </summary>
-        /// <param name="save">Wehre to save all of the players information</param>
-        public override void Save(StreamWriter save)
+        /// <param name="writer">Wehre to save all of the players information</param>
+        public override void Save(StreamWriter writer)
         {
             //Writes to file how much gold the player has
-            save.WriteLine(_gold);
+            writer.WriteLine(_gold);
             //Writes to file how big the inventory of the player is 
-            save.WriteLine(_inventory.Length);
+            writer.WriteLine(_inventory.Length);
 
+            base.Save(writer);
+            
             // foreach item in the players inventory. . .
-            foreach(Item item in _inventory)
+            foreach (Item item in _inventory)
             {
                 // . . . Save the items cost 
-                save.WriteLine(item.Cost);
+                writer.WriteLine(item.Cost);
                 //. . . Save The Item Name 
-                save.WriteLine(item.Name);
+                writer.WriteLine(item.Name);
             }
+
+
+
         }
 
         /// <summary>
         /// Loads the current stat of the player
         /// </summary>
-        /// <param name="load">Wehre to load all of the players information</param>
+        /// <param name="reader">Wehre to load all of the players information</param>
         /// <returns>true if its been read correctly, false if failed to laod</returns>
-        public override bool Load(StreamReader load)
+        public override bool Load(StreamReader reader)
         {
+
             //Reads the next line in the save file and sets the value to _gold if its a int 
-            if(!int.TryParse(load.ReadLine(), out _gold))
+            if(!int.TryParse(reader.ReadLine(), out _gold))
                 // Returms false if it's not true
                 return false;
 
             //Reads the next line in the save file and sets the value to arraySize if its a int 
-            if (!int.TryParse(load.ReadLine(), out int arrySize))
+            if (!int.TryParse(reader.ReadLine(), out int arrySize))
                 // Returms false if it's not true
                 return false;
+
+           
             //Creats a new array for the new set of items in the players inventory 
             _inventory = new Item[arrySize];
 
@@ -178,13 +194,16 @@ namespace My_Little_Store
             for(int i = 0; i < _inventory.Length; i++)
             {
                 //. . . Reads the next line in the save file and sets the value to to the next item in that index if its a int 
-                if (!int.TryParse(load.ReadLine(), out _inventory[i].Cost))
+                if (!int.TryParse(reader.ReadLine(), out _inventory[i].Cost))
                     //returns false if it's not true
                     return false;
 
                 //For every item in that index add ot to the  inventory 
-                _inventory[i].Name = load.ReadLine();
+                _inventory[i].Name = reader.ReadLine();
             }
+
+         
+
             //return true if everything loaded well 
             return true;
         }
