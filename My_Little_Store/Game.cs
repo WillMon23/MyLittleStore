@@ -7,10 +7,11 @@ namespace My_Little_Store
 {
     public enum Scen
     {
-        PLAYERNAME,
-        INTRODUCTION,
-        SHOP,
         
+        INTRODUCTION,
+        PLAYERNAME,
+        MAINMENU,
+        SHOP,
         BATTLE,
         LOADORSAVE,
     }
@@ -43,7 +44,7 @@ namespace My_Little_Store
 
         float _enemyHP, _enemyAtt, _enemyDef;
         
-        int _enemyGold; 
+        int _enemyGold;
 
         /// <summary>
         /// Runs the whole game when started  
@@ -85,7 +86,7 @@ namespace My_Little_Store
             if (GetInput("You Choose the Name " + _usersName + " Would You Like To Continue", "Yes", "No") == 0)
             { 
                 _player = new Player(_usersName, 2000f, 20f, 20f, 100);
-                _currentScene = Scen.INTRODUCTION; 
+                _currentScene = Scen.MAINMENU; 
             }
         }
 
@@ -104,8 +105,6 @@ namespace My_Little_Store
             _enemyDef = 10f;
 
             _enemyGold = 15;
-
-            
 
             _currentEnemy = new Entity("Elfoo", _enemyHP, _enemyAtt, _enemyDef, _enemyGold);
 
@@ -274,7 +273,7 @@ namespace My_Little_Store
             switch (choice)
             {
                 case 0:
-                    _currentScene = Scen.INTRODUCTION;
+                    _currentScene = Scen.PLAYERNAME;
                     break;
                 case 1:
                     if (Load())
@@ -303,12 +302,15 @@ namespace My_Little_Store
             switch (_currentScene)
             {
                 case Scen.INTRODUCTION:
-                   DisplayOpeningMenu();   
+                    StartMenu();
+                    break;
+                case Scen.PLAYERNAME:
+                    GetPlayersName(); 
                     break;
                 //. . .if the scene set to Introduction. . .
-                case Scen.PLAYERNAME:
+                case Scen.MAINMENU:
                     //...Displays Opening Menu
-                     GetPlayersName();
+                     MainGameMenu();
                     break;
                 //. . .If the scene set to LoadOrSave. . . 
                 case Scen.LOADORSAVE:
@@ -329,11 +331,11 @@ namespace My_Little_Store
         }
 
         //Dispalys Opening Menu 
-        private void DisplayOpeningMenu()
+        private void MainGameMenu()
         {
             
             //Gathers uers input and turns it to a int value so that it can be interpreted
-            int choice = GetInput("Welcome to Death Battle! Where You Endlessly fight Enemies Till Your Heart Content, What Would You Like To Do?","Shop", "Load Save Menu", "Start Battle");
+            int choice = GetInput("Hey "+ _player.Name + ", Welcome to Death Battle! Where You Endlessly fight Enemies Till Your Heart Content, What Would You Like To Do?","Shop", "Load Save Menu", "Start Battle");
 
             //Checks to see what the users input was. . . 
             switch (choice)
@@ -404,12 +406,22 @@ namespace My_Little_Store
             return result;
         }
 
+        private void PrintStats(Player entity)
+        {
+            Console.WriteLine(entity.Name + "\n" +
+                "Health: " + entity.HitPoint + "\n" +
+                "Attack: " + entity.AttackPower + "\n" +
+                "Defense: " + entity.Defense + "\n" + 
+                "Gold: " + entity.Gold + "\n");
+        }
+
         private void PrintStats(Entity entity)
         {
             Console.WriteLine(entity.Name + "\n" +
                 "Health: " + entity.HitPoint + "\n" +
                 "Attack: " + entity.AttackPower + "\n" +
-                "Defense: " + entity.Defense + "\n");
+                "Defense: " + entity.Defense + "\n" +
+                "Gold: " + entity.GoldEarn + "\n");
         }
 
         /// <summary>
@@ -454,11 +466,9 @@ namespace My_Little_Store
             }
             // if the choice happens to bt the size plus 1. . .
             else if (choice == (totalInventorySize + 1))
-            {
                 _currentScene = Scen.BATTLE;
-                Console.ReadLine();
-                Console.Clear();
-            }
+
+            
             // if the choice happens to bt the size plus 2. . .
             else if (choice == (totalInventorySize + 2))
                 //The Update Loop Ends and the Game is Over
@@ -470,43 +480,44 @@ namespace My_Little_Store
             Random rng = new Random();
 
             PrintStats(_player);
+            
 
             PrintStats(_currentEnemy);
 
             int choice = GetInput("You've Come Accross " + _currentEnemy.Name + ", What Will You Do Next?","Attack","Heal","Save", "Back To Main Menu");
 
+            _player.BonusItemsUse();
 
             switch (choice)
             {
                 case 0:
                     Console.WriteLine("You Delt " + _player.Attack(_currentEnemy) + " " + _currentEnemy.Name);
-                    Console.ReadKey();
+                    Console.ReadKey(true);
                     Console.Clear();
     
                     if (rng.Next(1, 10) == 1)
                     {
                         Console.WriteLine("You took " + _currentEnemy.Attack(_player) + " Hit Points ");
-                        Console.ReadKey();
+                        Console.ReadKey(true);
                         Console.Clear();
                     }break;
 
                 case 1:
-                    if (_player.NeedHealing() == 0)
+                    if (_player.NeedHealing() != 0)
                         Console.WriteLine("You Have " + _player.NeedHealing() + " Health Potion");
+
                     break;
 
                 case 2:
                     _currentScene = Scen.LOADORSAVE;
                     break;
                 case 3:
-                    _currentScene = Scen.INTRODUCTION;
+                    _currentScene = Scen.MAINMENU;
                     break;
 
             }
             
         }
-
-        
 
         private void BattleResults()
         {
@@ -518,7 +529,7 @@ namespace My_Little_Store
             if(_currentEnemy.HitPoint <= 0)
             {
                 Console.WriteLine(_currentEnemy.Name + " Has Met There End!!!" + 
-                    "\nYou Won " + _player.GoldEarn(_currentEnemy) + "g");
+                    "\nYou Won " + _player.GoldWon(_currentEnemy) + "g");
                 Console.ReadKey();
                 Console.Clear();
 
@@ -526,6 +537,9 @@ namespace My_Little_Store
                 {
                     case 0:
                         _currentEnemy = new Entity("Elfoo", (_enemyHP *= 2), (_enemyAtt *= 2), _enemyDef, (_enemyGold *= 2));
+                        break;
+                    case 1:
+                        _currentScene = Scen.MAINMENU;
                         break;
 
 

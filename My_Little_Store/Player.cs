@@ -13,6 +13,8 @@ namespace My_Little_Store
         // Gold the player will hold 
         private  int _gold;
 
+        private int _potionCount;
+
         // Players Inventory, if they buy something it will be added here  
         private Item[] _inventory;    
 
@@ -28,6 +30,7 @@ namespace My_Little_Store
 
         public float DefenseBoost { get { return _defenseBoost; } set { _defenseBoost = value; } }
 
+        public int PotionCount { get { return _potionCount; } }
         /// <summary>
         /// Creats a player costructer in order to set the players gold
         /// </summary>
@@ -35,6 +38,8 @@ namespace My_Little_Store
         public Player(string name,float health, float attack, float defense, int gold ) : base( name, health, attack, defense, gold)
         {
             _gold = gold;
+
+            _potionCount = 0;
 
             _inventory = new Item[0];
 
@@ -80,30 +85,30 @@ namespace My_Little_Store
             if(_inventory.Length != 0)
             {
                 foreach (Item item in _inventory)
-                {
+                { 
                     if (item.Name == "Sword")
-                        _attackBoost += 20;
+                        AttackIncrease(20);
 
                     else if (item.Name == "Shield")
-                        _defenseBoost += 5;
-
-                    else if (item.Name == "Health Potion")
-                        HitPoint =+ 15;
+                        DefenseIncrease(10);
                 }
-
             }
         }
 
         public int NeedHealing()
         {
-            int totalHealthPotion = 0;
             foreach (Item item in _inventory)
                 if(item.Name == "Health Potion")
-                    totalHealthPotion++;
-            return totalHealthPotion;
+                    _potionCount++;
+            
+
+            
+            return PotionCount;
         }
 
-        public int GoldEarn(Entity entity)
+
+
+        public int GoldWon(Entity entity)
         {
             _gold += entity.GoldEarn;
 

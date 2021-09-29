@@ -65,6 +65,15 @@ namespace My_Little_Store
         }
 
 
+        public void AttackIncrease(int attackBoost)
+        {
+            _attack += attackBoost;    
+        }
+
+        public void DefenseIncrease(int defenseBoost)
+        {
+            _defense += defenseBoost;
+        }
 
         public virtual void Save(StreamWriter writer)
         {
