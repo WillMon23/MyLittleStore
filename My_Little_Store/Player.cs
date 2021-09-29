@@ -20,6 +20,7 @@ namespace My_Little_Store
 
         private float _attackBoost;
 
+
         //Gold set to a property only allowing othere classes to view the gold amount
         public int Gold { get { return _gold; } }
         
@@ -81,16 +82,32 @@ namespace My_Little_Store
                 foreach (Item item in _inventory)
                 {
                     if (item.Name == "Sword")
-                        _attackBoost = +20;
+                        _attackBoost += 20;
 
                     else if (item.Name == "Shield")
-                        _defenseBoost =+ 5;
+                        _defenseBoost += 5;
 
                     else if (item.Name == "Health Potion")
                         HitPoint =+ 15;
                 }
 
             }
+        }
+
+        public int NeedHealing()
+        {
+            int totalHealthPotion = 0;
+            foreach (Item item in _inventory)
+                if(item.Name == "Health Potion")
+                    totalHealthPotion++;
+            return totalHealthPotion;
+        }
+
+        public int GoldEarn(Entity entity)
+        {
+            _gold += entity.GoldEarn;
+
+            return entity.GoldEarn;
         }
 
         /// <summary>

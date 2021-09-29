@@ -7,9 +7,9 @@ namespace My_Little_Store
 {
     public enum Scen
     {
-        PLAYERNAME,
         INTRODUCTION,
         SHOP,
+        PLAYERNAME,
         BATTLE,
         LOADORSAVE,
     }
@@ -35,12 +35,14 @@ namespace My_Little_Store
         bool _gameOver;
 
         //Keeps track of the current scene being played on
-        Scen _currentScene = Scen.INTRODUCTION;
-
-        
+        Scen _currentScene;
 
         //Hold Players Name
         string _usersName = "Defult";
+
+        float _enemyHP, _enemyAtt, _enemyDef;
+        
+        int _enemyGold; 
 
         /// <summary>
         /// Runs the whole game when started  
@@ -63,7 +65,7 @@ namespace My_Little_Store
             _gameOver = false;
 
             //Sets Current Scene to the first scene
-            _currentScene = 0;
+            _currentScene = Scen.INTRODUCTION;
 
             //Initializes the Curent Items in the game
             InitializeItems();
@@ -94,8 +96,20 @@ namespace My_Little_Store
             int round = 10;
 
             //Sets players allowance
-            _currentEnemy = new Entity("Elfoo",20f, 30f, 10f, 10);
 
+            _enemyHP = 20f;
+
+            _enemyAtt = 30f;
+
+            _enemyDef = 10f;
+
+            _enemyGold = 15;
+
+            
+
+            _currentEnemy = new Entity("Elfoo", _enemyHP, _enemyAtt, _enemyDef, _enemyGold);
+
+            _player = new Player(_usersName, 2000f, 20f, 20f, 100);
 
         }
 
@@ -207,6 +221,15 @@ namespace My_Little_Store
         /// </summary>
         private void Save()
         {
+            //Checks to see if there is an existising File named 'SaveData'. . . 
+            if (!File.Exists("SaveData.txt"))
+                //. . . If it does not we let them know there is a new save  
+                Console.WriteLine("New Save Was Detected");
+            // Other Wise. . .
+            else
+                // We welcome ther user back
+                Console.WriteLine("Save was Saved Over");
+
             //Creats a new text file 
             StreamWriter writer = new StreamWriter("SaveData.txt");
 
@@ -218,6 +241,8 @@ namespace My_Little_Store
 
             //closes the file when done 
             writer.Close();
+
+            
         }
 
         /// <summary>
@@ -253,14 +278,20 @@ namespace My_Little_Store
             // Loooks to see what scene were in. . .
             switch (_currentScene)
             {
-                case Scen.PLAYERNAME:
-                    GetPlayersName();
+                case Scen.INTRODUCTION:
+                   DisplayOpeningMenu();   
                     break;
                 //. . .if the scene set to Introduction. . .
-                case Scen.INTRODUCTION:
+                case Scen.PLAYERNAME:
                     //...Displays Opening Menu
-                    DisplayOpeningMenu();
+                     GetPlayersName();
                     break;
+                //. . .If the scene set to LoadOrSave. . . 
+                case Scen.LOADORSAVE:
+                    //. . . Dispalys a save load or quit menu
+                    LoadOrSaveMenu();
+                    break;
+                    
                 //. . .if the scene were in is Shop
                 case Scen.SHOP:
                     //. . .Display Shop Menu 
@@ -268,6 +299,7 @@ namespace My_Little_Store
                     break;
                 case Scen.BATTLE:
                     Battle();
+                    BattleResults();
                     break;
             }
         }
@@ -277,7 +309,7 @@ namespace My_Little_Store
         {
             
             //Gathers uers input and turns it to a int value so that it can be interpreted
-            int choice = GetInput("Welcome to Death Battle! Where You Endlessly fight Enemies Till Your Heart Content, What Would You Like To Do?", "Get Bonuses Shopping", "Load Inventory", "Back To Battle");
+            int choice = GetInput("Welcome to Death Battle! Where You Endlessly fight Enemies Till Your Heart Content, What Would You Like To Do?","Shop", "Load Save Menu", "Start Battle");
 
             //Checks to see what the users input was. . . 
             switch (choice)
@@ -299,6 +331,29 @@ namespace My_Little_Store
             }
         }
 
+        private void LoadOrSaveMenu()
+        {
+            int choice = GetInput("Laod and Saving Menu, What Will You Do Next", "Load", "Save", "Quit Game");
+
+            switch (choice)
+            {
+                case 0:
+                    //. . .Data Gets Saved 
+                    Save();
+                    //. . .Tells the user they had saved successfully
+                    Console.WriteLine("Save was succsessful");
+                    break;
+                case 1:
+                    if (Load())
+                        Console.WriteLine("Welcome Back");
+                    break;
+                case 2:
+                    _gameOver = true;
+                    break;
+
+            }
+        }
+
         /// <summary>
         /// Gets Shop Menu Options putd it in a array and just returns that array 
         /// </summary>
@@ -317,7 +372,7 @@ namespace My_Little_Store
                     result[i] = _shop.GetItemNames()[i];
             
             //sets the current size to be 'Save Game'
-            result[menuSize] = "Save Game";
+            result[menuSize] = "Go To Battle";
             //Sets the size plus one to be 'Quit Game'
             result[menuSize + 1] = "Quit Game";
 
@@ -329,7 +384,8 @@ namespace My_Little_Store
         {
             Console.WriteLine(entity.Name + "\n" +
                 "Health: " + entity.HitPoint + "\n" +
-                "Defense: " + entity.Defense);
+                "Attack: " + entity.AttackPower + "\n" +
+                "Defense: " + entity.Defense + "\n");
         }
 
         /// <summary>
@@ -374,11 +430,8 @@ namespace My_Little_Store
             }
             // if the choice happens to bt the size plus 1. . .
             else if (choice == (totalInventorySize + 1))
-            { 
-                //. . .Data Gets Saved 
-                Save();
-                //. . .Tells the user they had saved successfully
-                Console.WriteLine("Save was succsessful");
+            {
+                _currentScene = Scen.BATTLE;
                 Console.ReadLine();
                 Console.Clear();
             }
@@ -386,8 +439,6 @@ namespace My_Little_Store
             else if (choice == (totalInventorySize + 2))
                 //The Update Loop Ends and the Game is Over
                 _gameOver = true;
-
-
         }
 
         private void Battle()
@@ -398,19 +449,62 @@ namespace My_Little_Store
 
             PrintStats(_currentEnemy);
 
-            int choice = GetInput("You've Come Accross " + _currentEnemy.Name + ", What Will YOu Do Next?","Attack","Heal");
+            int choice = GetInput("You've Come Accross " + _currentEnemy.Name + ", What Will You Do Next?","Attack","Heal","Save", "Back To Main Menu");
 
 
-            switch (choice) 
+            switch (choice)
             {
                 case 0:
                     Console.WriteLine("You Delt " + _player.Attack(_currentEnemy) + " " + _currentEnemy.Name);
-                    break;      
-            }
+                    Console.ReadKey();
+                    Console.Clear();
+    
+                    if (rng.Next(1, 10) == 1)
+                    {
+                        Console.WriteLine("You took " + _currentEnemy.Attack(_player) + " Hit Points ");
+                        Console.ReadKey();
+                        Console.Clear();
+                    }break;
 
-            if (rng.Next(0, 10) >= 0)
-                Console.WriteLine("You took " + _currentEnemy.Attack(_player) + " Hit Points ");
+                case 1:
+                    if (_player.NeedHealing() == 0)
+                        Console.WriteLine("You Have " + _player.NeedHealing() + " Health Potion");
+                    break;
+
+                case 2:
+                    _currentScene = Scen.LOADORSAVE;
+                    break;
+                case 3:
+                    _currentScene = Scen.INTRODUCTION;
+                    break;
+
+            }
             
+        }
+
+        private void BattleResults()
+        {
+            if(_player.HitPoint <= 0f)
+            {
+                Console.WriteLine(_player.Name + " You're Died!");
+                _currentScene = Scen.LOADORSAVE;
+            }
+            if(_currentEnemy.HitPoint <= 0)
+            {
+                Console.WriteLine(_currentEnemy.Name + " Has Met There End!!!" + 
+                    "\nYou Won " + _player.GoldEarn(_currentEnemy) + "g");
+                Console.ReadKey();
+                Console.Clear();
+
+                switch ((GetInput("Would you like to do next?!", "Start A New Fight", "Back To Main Menu")))
+                {
+                    case 0:
+                        _currentEnemy = new Entity("Elfoo", (_enemyHP *= 2), (_enemyAtt *= 2), _enemyDef, (_enemyGold *= 2));
+                        break;
+
+
+                }
+            }
         }
 
     }

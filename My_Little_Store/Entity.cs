@@ -25,7 +25,7 @@ namespace My_Little_Store
 
         public float Defense { get { return _defense; } }
 
-        public float GoldEarn { get { return _goldEarn; } }
+        public int GoldEarn { get { return _goldEarn; } }
 
         public Entity(string name, float health, float attack, float defense, int goldEarn)
         {
@@ -64,6 +64,8 @@ namespace My_Little_Store
             return defender.DamageCalcualtion(AttackPower);
         }
 
+
+
         public virtual void Save(StreamWriter writer)
         {
             writer.WriteLine(_name);
@@ -88,8 +90,6 @@ namespace My_Little_Store
 
 
             return true;
-
-
         }
 
 
