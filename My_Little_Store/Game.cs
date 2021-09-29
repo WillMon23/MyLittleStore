@@ -5,15 +5,15 @@ using System.IO;
 
 namespace My_Little_Store
 {
-    public enum Scen 
+    public enum Scen
     {
         PLAYERNAME,
-        INTRODUCTION, 
+        INTRODUCTION,
         SHOP,
         BATTLE,
         LOADORSAVE,
-
     }
+    
     /// <summary>
     /// Core oporations of the game
     /// </summary>
@@ -36,6 +36,8 @@ namespace My_Little_Store
 
         //Keeps track of the current scene being played on
         Scen _currentScene = Scen.INTRODUCTION;
+
+        
 
         //Hold Players Name
         string _usersName = "Defult";
@@ -78,7 +80,10 @@ namespace My_Little_Store
             Console.Clear();
 
             if (GetInput("You Choose the Name " + _usersName + " Would You Like To Continue", "Yes", "No") == 0)
-                _currentScene = Scen.INTRODUCTION;
+            { 
+                _player = new Player(_usersName, 2000f, 20f, 20f, 100);
+                _currentScene = Scen.INTRODUCTION; 
+            }
         }
 
         /// <summary>
@@ -89,12 +94,11 @@ namespace My_Little_Store
             int round = 10;
 
             //Sets players allowance
-            _player = new Player(_usersName, 2000f, 20f, 20f, 100);
-
-            _currentEnemy = new Entity("Elfoo",20f, 30f, 30f, 10);
+            _currentEnemy = new Entity("Elfoo",20f, 30f, 10f, 10);
 
 
         }
+
 
         /// <summary>
         /// Updates Everything at frame
@@ -290,7 +294,7 @@ namespace My_Little_Store
                     break;
 
                 case 2:
-                    _currentScene = Scen.PLAYERNAME;
+                    _currentScene = Scen.BATTLE;
                     break;
             }
         }
@@ -319,6 +323,13 @@ namespace My_Little_Store
 
             //return the total menu results
             return result;
+        }
+
+        private void PrintStats(Entity entity)
+        {
+            Console.WriteLine(entity.Name + "\n" +
+                "Health: " + entity.HitPoint + "\n" +
+                "Defense: " + entity.Defense);
         }
 
         /// <summary>
@@ -381,7 +392,25 @@ namespace My_Little_Store
 
         private void Battle()
         {
-            Console.WriteLine("");
+            Random rng = new Random();
+
+            PrintStats(_player);
+
+            PrintStats(_currentEnemy);
+
+            int choice = GetInput("You've Come Accross " + _currentEnemy.Name + ", What Will YOu Do Next?","Attack","Heal");
+
+
+            switch (choice) 
+            {
+                case 0:
+                    Console.WriteLine("You Delt " + _player.Attack(_currentEnemy) + " " + _currentEnemy.Name);
+                    break;      
+            }
+
+            if (rng.Next(0, 10) >= 0)
+                Console.WriteLine("You took " + _currentEnemy.Attack(_player) + " Hit Points ");
+            
         }
 
     }

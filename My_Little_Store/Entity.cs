@@ -53,7 +53,7 @@ namespace My_Little_Store
             if (damageTaken < 0)
                 damageTaken = 0;
 
-            _hitPoints =- damageTaken;
+            _hitPoints -= damageTaken;
 
             return damageTaken;
 
