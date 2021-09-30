@@ -77,13 +77,15 @@ namespace My_Little_Store
             _currentScene = Scen.INTRODUCTION;
 
             //Initializes the Curent Items in the game
-            InitializeItems();        
+            InitializeItems();
+
+            InitializePlayerAndEnemy();
         }
 
         private void GetPlayersName()
         { 
             Console.WriteLine("Lets Start With You're Name");
-
+            Console.Write("> ");
             _usersName = Console.ReadLine();
             Console.Clear();
 
@@ -245,6 +247,9 @@ namespace My_Little_Store
             //Saves the players writes stats to that text file 
             _player.Save(writer);
 
+
+            
+
             _elfoo.Save(writer);
 
 
@@ -270,11 +275,13 @@ namespace My_Little_Store
             StreamReader load = new StreamReader("SaveData.txt");
 
             if (!Scen.TryParse(load.ReadLine(), out _currentScene))
-                loaded = false; 
-             //if player didn't load properly
+                loaded = false;
+
+            //if player didn't load properly
             if (!_player.Load(load))
                 // returns false
                 loaded =  false;
+
 
             if (!_elfoo.Load(load))
                 loaded = false;
@@ -361,7 +368,7 @@ namespace My_Little_Store
                     StartMenu();
                     break;
                 case Scen.PLAYERNAME:
-                    InitializePlayerAndEnemy();
+                   // InitializePlayerAndEnemy();
                     GetPlayersName(); 
                     break;
                 //. . .if the scene set to Introduction. . .
@@ -619,6 +626,7 @@ namespace My_Little_Store
                         if (_player.BonusItemsUse())
                         {
                             Console.WriteLine("Stats Have Been Modified");
+                            _equiped = true;
                             Console.ReadKey(true);
                             Console.Clear();
                         }
@@ -628,17 +636,18 @@ namespace My_Little_Store
                             Console.ReadKey(true);
                             Console.Clear();
                         }
-                        _equiped = true;
+                        
                     }
                     else
                     {
                         if (_player.RemoveBonus())
                         {
                             Console.WriteLine("Stat Modifiers Were Removed");
+                            _equiped = false;
                             Console.ReadKey(true);
                             Console.Clear();
                         }
-                        _equiped = false;
+                        
                     }
                     break;
                 case 3:
