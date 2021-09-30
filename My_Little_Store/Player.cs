@@ -23,12 +23,12 @@ namespace My_Little_Store
         private float _attackBoost;
 
 
+        public float AttackBoost { get { return _attackBoost; } }
+         
+        public float DefenseBoost { get { return _defenseBoost; } }
+
         //Gold set to a property only allowing othere classes to view the gold amount
         public int Gold { get { return _gold; } }
-        
-         public float AttackBoost { get { return _attackBoost; } set { _attackBoost = value; } }
-
-        public float DefenseBoost { get { return _defenseBoost; } set { _defenseBoost = value; } }
 
         public int PotionCount { get { return _potionCount; } }
         /// <summary>
@@ -43,10 +43,9 @@ namespace My_Little_Store
 
             _inventory = new Item[0];
 
-            _attackBoost = HitPoint;
+            _defenseBoost = 0;
 
-            _defenseBoost = Defense;
-
+            _attackBoost = 0;
         }
 
    
@@ -92,6 +91,50 @@ namespace My_Little_Store
 
                     else if (item.Name == "Shield")
                         DefenseIncrease(item.Potence);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public bool DisplayBonus()
+        {
+            float swordCount = 0;
+
+            float shieldCount = 0;
+            if (_inventory.Length != 0)
+            {
+
+                foreach (Item item in _inventory)
+                {
+                    if (item.Name == "Sword")   
+                        swordCount++; 
+                    
+                    else if (item.Name == "Shield") 
+                        shieldCount++;
+
+                    _attackBoost *= shieldCount;
+
+                    _defenseBoost *= shieldCount;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public bool RemoveBonus()
+        {
+
+            if (_inventory.Length != 0)
+            {
+
+                foreach (Item item in _inventory)
+                {
+                    if (item.Name == "Sword")
+                        AttackDecrease(item.Potence);
+
+                    else if (item.Name == "Shield")
+                        DefenseDecrease(item.Potence);
                 }
                 return true;
             }
@@ -184,6 +227,9 @@ namespace My_Little_Store
             //Reads the next line in the save file and sets the value to arraySize if its a int 
             if (!int.TryParse(reader.ReadLine(), out int arrySize))
                 // Returms false if it's not true
+                return false;
+
+            if (!base.Load(reader))
                 return false;
 
            

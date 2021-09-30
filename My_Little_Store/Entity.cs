@@ -64,6 +64,10 @@ namespace My_Little_Store
             return defender.DamageCalcualtion(AttackPower);
         }
 
+        public void Healing(int heal)
+        {
+            _hitPoints += heal;
+        }
 
         public void AttackIncrease(int attackBoost)
         {
@@ -73,6 +77,16 @@ namespace My_Little_Store
         public void DefenseIncrease(int defenseBoost)
         {
             _defense += defenseBoost;
+        }
+
+        public void AttackDecrease( int attackReduced)
+        {
+            _attack -= attackReduced;
+        }
+
+        public void DefenseDecrease( int defenseReduced)
+        {
+            _defense -= defenseReduced;
         }
 
         public virtual void Save(StreamWriter writer)
