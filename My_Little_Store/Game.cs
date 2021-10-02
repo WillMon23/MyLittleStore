@@ -45,6 +45,7 @@ namespace My_Little_Store
         //Hold Players Name
         string _usersName = "Defult";
 
+        // Tracks enemies Growth
         float _enemyHP, _enemyAtt, _enemyDef;
         
         int _enemyGold;
@@ -101,24 +102,26 @@ namespace My_Little_Store
         /// </summary>
         private void InitializePlayerAndEnemy()
         {
-
-            //Sets players allowance
-
+            // Enemy Health 
             _enemyHP = 20f;
 
+            // Enemy Atttack Power 
             _enemyAtt = 30f;
 
+            // Enemy Defemse Power
             _enemyDef = 10f;
 
+            // Enemys Gold 
             _enemyGold = 15;
 
+            // In Order To Keeep Count of the Number Of Enemies 
             _enemyCount = 1;
 
+            // enemy Decloration
             _elfoo = new Entity("Elfoo", _enemyHP, _enemyAtt, _enemyDef, _enemyGold);
 
+            // Player Decloration
             _player = new Player(_usersName, 1000f, 20f, 20f, 100);
-
-
         }
 
 
@@ -244,12 +247,10 @@ namespace My_Little_Store
             // Writes on the text file the current scene
             writer.WriteLine(_currentScene);
 
-            //Saves the players writes stats to that text file 
+            //Saves the players stats to that text file 
             _player.Save(writer);
-
-
             
-
+            // Enemy Entity stats savd tp text File 
             _elfoo.Save(writer);
 
 
@@ -294,23 +295,32 @@ namespace My_Little_Store
             return loaded;
         }
 
-
+        /// <summary>
+        /// Checks and uses the potions aquired in the shop if purched 
+        /// </summary>
         private void PotionUsed()
         {
-            if (_player.NeedHealing() != 0)
+            // IF player Needs Health But It's Not Zero. . .
+            if (_player.NeedHealing() > 0)
             {
+                // . . . Creats a verable to contain the values of both the poitons purcheded and the potions used 
                 int _potionUsed = _player.NeedHealing() - _player.PotionCount;
-                if (_potionUsed != 0)
-                {
+                // . . .IF They HAve Potiones Equiped. . . 
+                if (_potionUsed > 0)
+                {   //. . .If player chooses to use a potion they will gain hit points but lose a potion. . . 
                     if (GetInput("You Have " + _potionUsed + " Health Potion, Would You Like To Use One?", "Yes", "No") == 0)
                     {
+                        //. . . Adds Health 
                         _player.UsePotion(75);
+                        //. . . Lets the player know they consumed there potion 
                         Console.WriteLine("You Used 1 Health Potion");
                     }
                     else
+                        // If player did not decide to use the potion then they get a message 
                         Console.WriteLine("Health Potion Was Not Consumed");
                 }
                 else
+                    // If They Ran Out of Potion after use they get a message 
                     Console.WriteLine("You Ran Out Of Potions");
 
                 Console.ReadKey(true);
@@ -318,39 +328,53 @@ namespace My_Little_Store
             }
             else
             {
+                // If fthey never had a potion to begine with they just get a message to notify the user 
                 Console.WriteLine("You Don't Have Any HealthPotions");
                 Console.ReadKey(true);
                 Console.Clear();
             }
         }
 
+        /// <summary>
+        /// The Menu to be Displayed at the Start of the Game or The End Of The Game
+        /// </summary>
         private void StartMenu()
         {
+            // Starting Menu Menu
             int choice = GetInput("Start Menu", "Start New Game", "Load Game","Quit Game");
+            // If choice is. . .
             switch (choice)
             {
+                //. . . is 0, . . .
                 case 0:
-                    
+                    //. . . Chaange the Scene to Player Name Mwnu
                     _currentScene = Scen.PLAYERNAME;
                     break;
+                //. . . is 1, . . .
                 case 1:
+                    // Loads Privouse Game if everything loaded smoothly 
                     if (Load())
                     {
+                        // Lets the user know It loaded Correctly
                         Console.WriteLine("Load was successful");
                         Console.ReadKey(true);
                         Console.Clear();
 
                     }
+                    //If Faied to load. . . 
                     else
                     {
+                        // User Will be preseented with a faield  message 
                         Console.WriteLine("Failed to Load");
+                        // scen stays in the Introductional scen 
                         _currentScene = Scen.INTRODUCTION;
                         Console.ReadKey(true);
                         Console.Clear();
                     }
                     break;
-
+                //. . . is 2, . . .
                 case 2:
+                    // Ends The Game
                     _gameOver = true;
                     break;
             }
