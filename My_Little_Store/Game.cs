@@ -283,8 +283,9 @@ namespace My_Little_Store
                 // returns false
                 loaded =  false;
 
-
+            // if enemy(elfoo) stats did not load 
             if (!_elfoo.Load(load))
+                //returns false 
                 loaded = false;
 
            
@@ -347,6 +348,8 @@ namespace My_Little_Store
             {
                 //. . . is 0, . . .
                 case 0:
+                    // Starts The Players VAlues Up 
+                    InitializePlayerAndEnemy();
                     //. . . Chaange the Scene to Player Name Mwnu
                     _currentScene = Scen.PLAYERNAME;
                     break;
@@ -388,9 +391,12 @@ namespace My_Little_Store
             // Loooks to see what scene were in. . .
             switch (_currentScene)
             {
+                // case scene changed to Introduction
                 case Scen.INTRODUCTION:
+                    // Starting menu opporate 
                     StartMenu();
                     break;
+                // case scene changed to Player Name Menu
                 case Scen.PLAYERNAME:
                    // InitializePlayerAndEnemy();
                     GetPlayersName(); 
@@ -445,28 +451,40 @@ namespace My_Little_Store
                     break;
                 //. . .if choice is 1 
                 case 1:
+                    // change scen to Load and Save Menu
                     _currentScene = Scen.LOADORSAVE;
                     break;
-
+                //case choice is 2. . .
                 case 2:
+                    // Lets The User Know to that there heading to the Battle Menu
                     Console.WriteLine("Heading To Battle Menu");
                     Console.ReadKey(true);
                     Console.Clear();
+                    //Changes the scen to the battle menu
                     _currentScene = Scen.BATTLE;
                     break;
+                // Case the users choice is 3. . . 
                 case 3:
+                    //Use Choose to end the game 
                     _gameOver = true;
                     break;
             }
         }
 
+        /// <summary>
+        /// Menu set to give the user the option to load, save or end the game 
+        /// </summary>
         private void LoadOrSaveMenu()
         {
+            // Let The User Know there in a load save menu and asks them what they would like to do next from Save, Load, Go Back to the Main Menu or End The Game 
             int choice = GetInput("Laod and Saving Menu, What Will You Do Next","Save" , "Load", "Back To Main Menu", "Quit Game");
 
+            // If User Choice is. . .
             switch (choice)
             {
+                // Case choice is 0. . .
                 case 0:
+                    // If Player is Not Dead (ALive). . .
                     if (!_died)
                     {
                         //. . .Data Gets Saved 
@@ -476,33 +494,44 @@ namespace My_Little_Store
                         Console.ReadKey(true);
                         Console.Clear();
                     }
+                    // Else . . . 
                     else
                     {
+                        // Let The USer Know That This Is Not an Option For Them 
                         Console.WriteLine("Function Deactivated When Dead");
                         Console.ReadKey(true);
                         Console.Clear();
                     }
                     break;
+                // Case Choice is 1 . . .
                 case 1:
+                    // If Load Was Succsessful
                     if (Load())
                     {
+                        // Gives The User a 'Welcome Back' Message  
                         Console.WriteLine("Welcome Back");
                         Console.ReadKey(true);
                         Console.Clear();
                     }
-
+                    //Else . .  .
                     else
                     {
+                        // Lets the user Know Load had Failed 
                         Console.WriteLine("Load Attempt Failed ");
+                        // Keeps It In The Same Scen 
                         _currentScene = Scen.INTRODUCTION;
                         Console.ReadKey(true);
                         Console.Clear();
                     }
                     break;
+                //Case choice was 2 . . .
                 case 2:
+                    // Current Scen Will Be Changed to The MAin Menu
                     _currentScene = Scen.MAINMENU;
                     break;
+                // Case Choice is 3 . . .
                 case 3:
+                    // Game HAs Ended 
                     _gameOver = true;
                     break;
 
@@ -526,7 +555,7 @@ namespace My_Little_Store
                     //. . . Just Plug it In
                     result[i] = _shop.GetItemNames()[i];
             
-            //sets the current size to be 'Save Game'
+            //sets the current size to be 'Save Game'.
             result[menuSize] = "Back TO Main Menu";
             //Sets the size plus one to be 'Quit Game'
             result[menuSize + 1] = "Quit Game";
@@ -535,31 +564,42 @@ namespace My_Little_Store
             return result;
         }
 
-        private void PrintStats(Player entity)
+        /// <summary>
+        /// Print Stats to Screen For Player Stats
+        /// </summary>
+        /// <param name="player">Users Players Stats For Display Perpous</param>
+        private void PrintStats(Player player)
         {
+            // IF THey Dont Have Anything Equiped. . . 
             if (!_equiped)
-                Console.WriteLine(entity.Name + "\n" +
-                "Health: " + entity.HitPoint + "\n" +
-                "Attack: " + entity.AttackPower + "\n" +
-                "Defense: " + entity.Defense + "\n" + 
-                "Gold: " + entity.Gold + "\n");
-
+                // Stats Will Be Displayed Like Soo Without the Added Enhancements 
+                Console.WriteLine(player.Name + "\n" + // Name 
+                "Health: " + player.HitPoint + "\n" + // Hit points 
+                "Attack: " + player.AttackPower + "\n" + // Attack Damage 
+                "Defense: " + player.Defense + "\n" +  // Defense Power
+                "Gold: " + player.Gold + "\n"); // Gold Held
+            //Else . . .
             else
-                Console.WriteLine(entity.Name + "\n" +
-                "Health: " + entity.HitPoint + "\n" +
-                "Attack: " + entity.AttackPower + " (" + _player.AttackBoost + ")\n" +
-                "Defense: " + entity.Defense + " (" + _player.DefenseBoost + ")\n" +
-                "Gold: " + entity.GoldEarn + "\n");
+                // Console Will Display Stats With The Enhancements 
+                Console.WriteLine(player.Name + "\n" + // Name 
+                "Health: " + player.HitPoint + "\n" + // Hit Points 
+                "Attack: " + player.AttackPower + " (" + player.AttackBoost + ")\n" + // Attack Damage and Attack bonus 
+                "Defense: " + player.Defense + " (" + player.DefenseBoost + ")\n" + // Defense Power and Defense bonus 
+                "Gold: " + player.Gold + "\n"); // Gold Hold 
         }
 
+        /// <summary>
+        /// Displays Entity Stats 
+        /// </summary>
+        /// <param name="entity">Base Stats Used To Classify a Entity </param>
         private void PrintStats(Entity entity)
         {
-     
-                Console.WriteLine(entity.Name + "\n" +
-                    "Health: " + entity.HitPoint + "\n" +
-                    "Attack: " + entity.AttackPower + "\n" +
-                    "Defense: " + entity.Defense + "\n" +
-                    "Gold: " + entity.GoldEarn + "\n");
+                // Console Will Dis[layes Entity Stats 
+                Console.WriteLine(entity.Name + "\n" + // Name 
+                    "Health: " + entity.HitPoint + "\n" + // Hit Points 
+                    "Attack: " + entity.AttackPower + "\n" + // Attack Damage 
+                    "Defense: " + entity.Defense + "\n" + // Defense Power 
+                    "Gold: " + entity.GoldEarn + "\n"); // Gold Held 
            
         }
 
@@ -614,8 +654,12 @@ namespace My_Little_Store
                 _gameOver = true;
         }
 
+        /// <summary>
+        /// CAlculates and Handles What Happens In The Battle Scen
+        /// </summary>
         private void Battle()
         {
+            // Creats a Random Variable to Randomly Dicatate When the enemy
             Random rng = new Random();
 
             PrintStats(_player);
@@ -698,7 +742,7 @@ namespace My_Little_Store
             {
                 Console.WriteLine(_player.Name + " Your Died!");
                 _died = true;
-                _currentScene = Scen.LOADORSAVE;
+                _currentScene = Scen.INTRODUCTION;
             }
             if(_elfoo.HitPoint <= 0)
             {

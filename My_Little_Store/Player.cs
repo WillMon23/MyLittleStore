@@ -78,6 +78,7 @@ namespace My_Little_Store
             }
         }
 
+        // 
         public bool BonusItemsUse()
         {
             
