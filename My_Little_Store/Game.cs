@@ -5,6 +5,7 @@ using System.IO;
 
 namespace My_Little_Store
 {
+    //Invelops Whats Scenes Will Be Tansitioning through
     public enum Scen
     {
         
