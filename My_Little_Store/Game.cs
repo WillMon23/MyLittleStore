@@ -674,7 +674,7 @@ namespace My_Little_Store
             switch (choice)
             {
                 case 0:
-                    Console.WriteLine("You Dealt " + _player.Attack(_elfoo) + " " + _elfoo.Name);
+                    Console.WriteLine("You Dealt " + _player.Attack(_elfoo) + " to " + _elfoo.Name);
                     Console.ReadKey(true);
                     Console.Clear();
     
@@ -693,6 +693,7 @@ namespace My_Little_Store
                     {
                         if (_player.BonusItemsUse())
                         {
+                            
                             Console.WriteLine("Stats Have Been Modified");
                             _equiped = true;
                             Console.ReadKey(true);
@@ -700,7 +701,7 @@ namespace My_Little_Store
                         }
                         else
                         {
-                            Console.WriteLine("You Dont Have Any Modifires");
+                            Console.WriteLine("You Don't Have Any Modifires");
                             Console.ReadKey(true);
                             Console.Clear();
                         }
