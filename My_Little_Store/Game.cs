@@ -47,7 +47,7 @@ namespace My_Little_Store
         string _usersName = "Defult";
 
         // Tracks enemies Growth
-        float _enemyHP, _enemyAtt, _enemyDef;
+        static float  _enemyHP, _enemyAtt, _enemyDef;
         
         int _enemyGold;
 
@@ -660,48 +660,61 @@ namespace My_Little_Store
         /// </summary>
         private void Battle()
         {
-            // Creats a Random Variable to Randomly Dicatate When the enemy
+            // Creats a Random Variable to Randomly Dicatates When the enemy will attack
             Random rng = new Random();
 
+            // Prints the stats of the player
             PrintStats(_player);
             
-
+            // Prints the stats of the enemy    
             PrintStats(_elfoo);
 
+            // Gets the players Imput, User chooses wether they would like to "Attack","Heal", "Equip Bonuses", "Save", "Go Back To Main Menu", "Quit Game"
             int choice = GetInput("You've Come Accross " + _elfoo.Name + ", What Will You Do Next?","Attack","Heal", "Equip Bonuses", "Save", "Back To Main Menu", "Quit Game");
 
             
-
+            //When the user makes there choice. . .
             switch (choice)
             {
+                // Case choice is 0 . . .
                 case 0:
+                    // Console will print out the damage calculations made to the entity elfoo
                     Console.WriteLine("You Dealt " + _player.Attack(_elfoo) + " to " + _elfoo.Name);
                     Console.ReadKey(true);
                     Console.Clear();
-    
+                    
+                    // Sets the chance that the enemy will attack back;
                     if (rng.Next(1, 4) == 1)
                     {
+                        // Console will print out the damage calculations done to the play
                         Console.WriteLine("You took " + _elfoo.Attack(_player) + " Hit Points of Damage");
                         Console.ReadKey(true);
                         Console.Clear();
-                    }break;
-
+                    }
+                    break;
+                // Case choice is 1 . . .
                 case 1:
+                    // Uses players potion
                     PotionUsed();
                     break;
+                // Case choice is 2 . . . 
                 case 2:
+                    // Moddifries
                     if (!_equiped)
                     {
+                        // IF Player Has modifires. . .
                         if (_player.BonusItemsUse())
                         {
-                            
+                            // Let the player know thst they have been activated 
                             Console.WriteLine("Stats Have Been Modified");
+                            // Set Equiped to true
                             _equiped = true;
                             Console.ReadKey(true);
                             Console.Clear();
                         }
                         else
                         {
+                            // Lets the user know there player has no modifires 
                             Console.WriteLine("You Don't Have Any Modifires");
                             Console.ReadKey(true);
                             Console.Clear();
@@ -710,27 +723,36 @@ namespace My_Little_Store
                     }
                     else
                     {
+                        // If player has modifires equiped 
                         if (_player.RemoveBonus())
                         {
+                            // Let the player know the modifres were removed 
                             Console.WriteLine("Stat Modifiers Were Removed");
+                            // Sets Equiped to false
                             _equiped = false;
                             Console.ReadKey(true);
                             Console.Clear();
                         }
-                        
+
                     }
                     break;
+                // Case choice is 3 . . . 
                 case 3:
+                    // Saves Games current stat
                     Save();
+                    //Lets the user know that the game was saved
                     Console.WriteLine("Save Was Succsessful");
                     Console.ReadKey(true);
                     Console.Clear();
                     break;
+                // Case choice is 4 . . . 
                 case 4:
+                    // Changes scene to the main menu
                     _currentScene = Scen.MAINMENU;
                     break;
-
+                // Case choice is 5 . . . 
                 case 5:
+                    //End The Game
                     _gameOver = true;
                     break;
 
@@ -738,31 +760,59 @@ namespace My_Little_Store
             
         }
 
+        /// <summary>
+        /// At the end of the battle 
+        /// Checks to she what are the conditions of the current Enities 
+        /// Once Player or an Elfoo dies
+        /// The Console will display the sesult 
+        /// IT'll as the user if they would like to start again in the player dies
+        /// </summary>
         private void BattleResults()
         {
+            // if player hit points are equal or less than 0. . .
             if(_player.HitPoint <= 0f)
             {
+                // Lets the user know they died 
                 Console.WriteLine(_player.Name + " Your Died!");
+                // Set Player to dead
                 _died = true;
+                // Current Scene changes to the introduction scene
                 _currentScene = Scen.INTRODUCTION;
             }
+            // If elfoo hit points are equal or less than 0 . . . 
             if(_elfoo.HitPoint <= 0)
             {
+                // Lets the user know they have defeateed with there reward 
                 Console.WriteLine(_elfoo.Name + " Has Met There End!!!" + 
                     "\nYou Won " + _player.GoldWon(_elfoo) + "g");
                 Console.ReadKey();
                 Console.Clear();
 
-                switch ((GetInput("Would you like to do next?!", "Start A New Fight", "Back To Main Menu","Quit Game")))
+                // Gets users input in order to "Start A Next Fight", "Go Back To Main Menu" or "Quit Game . . ."
+                switch ((GetInput("Would you like to do next?!", "Start A Next Fight", "Back To Main Menu","Quit Game")))
                 {
+                    // Case user input is 0 . . . 
                     case 0:
+                        // Incraments the enemy count by 1
                         _enemyCount++;
+                        // Creats a new instance of an elfo 
                         _elfoo = new Entity("Elfoo #" + _enemyCount, (_enemyHP *= 2), (_enemyAtt *= 2), _enemyDef, (_enemyGold *= 2));
                         break;
+                    // Case user input is 1 . . . 
                     case 1:
+                        // Incraments the enemy count by 1
+                        _enemyCount++;
+                        // Creats a new instance of an elfo 
+                        _elfoo = new Entity("Elfoo #" + _enemyCount, (_enemyHP *= 2), (_enemyAtt *= 2), _enemyDef, (_enemyGold *= 2));
+                        // Sets the new current scene to the main menu
                         _currentScene = Scen.MAINMENU;
+                        Console.WriteLine("Expect a new fight when you arrive back to battle ");
+                        Console.ReadKey();
+                        Console.Clear();
                         break;
+                    // Case user input is 0 . . . 
                     case 2:
+                        // End Game
                         _gameOver = true;
                         break;
                 }

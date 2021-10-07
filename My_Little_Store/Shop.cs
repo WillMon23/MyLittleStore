@@ -13,6 +13,7 @@ namespace My_Little_Store
         //How much it costs to but an item
         public int Cost;
 
+        //THe Strenth of the Item
         public int Potence;
 
         //The name assoicated with the cost 
