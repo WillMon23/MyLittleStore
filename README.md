@@ -23,4 +23,4 @@ Once you have items in your inventory then you 'Equip Bonuese' bonueses will sta
 
 ### Don't Do:
 The options are rather strict on what you can and can't input so i suggest you fallow them. 
-I suggest you dont skip the prologe right away. You're open to click anything it just wont allow it
+You're open to click anything it just wont allow it
